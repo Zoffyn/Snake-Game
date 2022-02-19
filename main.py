@@ -1,5 +1,6 @@
 import msvcrt
 from random import randint
+from time import sleep
 from typing import Final
 
 WIDTH: Final = 50
@@ -34,33 +35,41 @@ def shift_body(x:int, y: int):
         x = px
         y = py
 
-def move_up() -> None:
-    if player[0].y > 1:
+def move_up() -> bool:
+    if player[0].y > 1 and player[0].y - 1 != player[1].y:
         x = player[0].x
         y = player[0].y
         player[0].y -= 1
         shift_body(x, y)
+        return True
+    return False
 
-def move_down() -> None:
-    if player[0].y < HEIGHT:
+def move_down() -> bool:
+    if player[0].y < HEIGHT and player[0].y + 1 != player[1].y:
         x = player[0].x
         y = player[0].y
         player[0].y += 1
         shift_body(x, y)
+        return True
+    return False
 
-def move_right() -> None:
-    if player[0].x < WIDTH:
+def move_right() -> bool:
+    if player[0].x < WIDTH and player[0].x + 1 != player[1].x:
         x = player[0].x
         y = player[0].y
         player[0].x += 1
         shift_body(x, y)
+        return True
+    return False
 
-def move_left() -> None:
-    if player[0].x > 1:
+def move_left() -> bool:
+    if player[0].x > 1 and player[0].x - 1 != player[1].x:
         x = player[0].x
         y = player[0].y
         player[0].x -= 1
-        shift_body(x, y)  
+        shift_body(x, y)
+        return True
+    return False  
 
 def render() -> None:
     for y in range(HEIGHT + 2):
@@ -81,18 +90,27 @@ def clear_screen() -> bool:
     print(f'\033[{WIDTH+2}D', end='')
     print(f'\033[{HEIGHT+2}A', end='')
 
+current_movement = None
+
 gameover: bool = False
 
 while not gameover:
     render()
     clear_screen()
+    if current_movement:
+        current_movement()
+    sleep(0.2)
     if msvcrt.kbhit():
         typed_character = msvcrt.getch()
         if typed_character == b'w':
-            move_up()
+            if move_up():
+                current_movement = move_up
         if typed_character == b'a':
-            move_left()
+            if move_left():
+                current_movement = move_left
         if typed_character == b's':
-            move_down()
+            if move_down():
+                current_movement = move_down
         if typed_character == b'd':
-            move_right()
+            if move_right():
+                current_movement = move_right
