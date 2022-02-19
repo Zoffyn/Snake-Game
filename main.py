@@ -22,21 +22,45 @@ class Position:
 
 player: list[Position] = [Position(randint(1, WIDTH), randint(1, HEIGHT))]
 
+for i in range(3):
+    tail = player[len(player) - 1]
+    player.append(Position(tail.x - 1, tail.y))
+
+def shift_body(x:int, y: int):
+    for i in range(1, len(player)):
+        px = player[i].x
+        py = player[i].y
+        player[i] = Position(x, y)
+        x = px
+        y = py
+
 def move_up() -> None:
     if player[0].y > 1:
+        x = player[0].x
+        y = player[0].y
         player[0].y -= 1
+        shift_body(x, y)
 
 def move_down() -> None:
     if player[0].y < HEIGHT:
+        x = player[0].x
+        y = player[0].y
         player[0].y += 1
+        shift_body(x, y)
 
 def move_right() -> None:
     if player[0].x < WIDTH:
+        x = player[0].x
+        y = player[0].y
         player[0].x += 1
+        shift_body(x, y)
 
 def move_left() -> None:
     if player[0].x > 1:
-        player[0].x -= 1  
+        x = player[0].x
+        y = player[0].y
+        player[0].x -= 1
+        shift_body(x, y)  
 
 def render() -> None:
     for y in range(HEIGHT + 2):
