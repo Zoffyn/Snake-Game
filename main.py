@@ -1,3 +1,4 @@
+import msvcrt
 from random import randint
 from typing import Final
 
@@ -20,7 +21,23 @@ class Position:
         return "Position(" + str(self.x) + ", " + str(self.y) + ")"
 
 player: list[Position] = [Position(randint(1, WIDTH), randint(1, HEIGHT))]
-print(player[0])
+
+def move_up() -> None:
+    if player[0].y > 1:
+        player[0].y -= 1
+
+def move_down() -> None:
+    if player[0].y < HEIGHT:
+        player[0].y += 1
+
+def move_right() -> None:
+    if player[0].x < WIDTH:
+        player[0].x += 1
+
+def move_left() -> None:
+    if player[0].x > 1:
+        player[0].x -= 1  
+
 def render() -> None:
     for y in range(HEIGHT + 2):
         for x in range(WIDTH + 2):
@@ -36,4 +53,22 @@ def render() -> None:
                     print('░', end='')
         print()
 
-render()
+def clear_screen() -> bool:
+    print(f'\033[{WIDTH+2}D', end='')
+    print(f'\033[{HEIGHT+2}A', end='')
+
+gameover: bool = False
+
+while not gameover:
+    render()
+    clear_screen()
+    if msvcrt.kbhit():
+        typed_character = msvcrt.getch()
+        if typed_character == b'w':
+            move_up()
+        if typed_character == b'a':
+            move_left()
+        if typed_character == b's':
+            move_down()
+        if typed_character == b'd':
+            move_right()
