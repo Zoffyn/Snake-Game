@@ -24,13 +24,13 @@ class Position:
 player: list[Position] = [Position(randint(1, WIDTH), randint(1, HEIGHT))]
 food: Position
 
-def put_food():
+def put_food() -> None:
     global food
     food = Position(randint(1, WIDTH), randint(1, HEIGHT))
-    while food == player[0]:
+    while food in player:
         food = Position(randint(1, WIDTH), randint(1, HEIGHT))
 
-def shift_body(x:int, y: int):
+def shift_body(x:int, y: int) -> None:
     if len(player) > 1:
         for i in range(1, len(player)):
             px = player[i].x
@@ -39,47 +39,35 @@ def shift_body(x:int, y: int):
             x = px
             y = py
 
-def move_up(move: bool = True) -> bool:
-    if player[0].y > 1:
-        if move:
-            x = player[0].x
-            y = player[0].y
-            player[0].y -= 1
-            shift_body(x, y)
-        return True
-    return False
+def move_up() -> None:
+    global current_movement
+    x = player[0].x
+    y = player[0].y
+    player[0].y -= 1
+    shift_body(x, y)
 
-def move_down(move: bool = True) -> bool:
-    if player[0].y < HEIGHT:
-        if move:
-            x = player[0].x
-            y = player[0].y
-            player[0].y += 1
-            shift_body(x, y)
-        return True
-    return False
+def move_down() -> None:
+    global current_movement
+    x = player[0].x
+    y = player[0].y
+    player[0].y += 1
+    shift_body(x, y)
 
-def move_right(move: bool = True) -> bool:
-    if player[0].x < WIDTH:
-        if move:
-            x = player[0].x
-            y = player[0].y
-            player[0].x += 1
-            shift_body(x, y)
-        return True
-    return False
+def move_right() -> None:
+    global current_movement
+    x = player[0].x
+    y = player[0].y
+    player[0].x += 1
+    shift_body(x, y)
 
-def move_left(move: bool = True) -> bool:
-    if player[0].x > 1:
-        if move:
-            x = player[0].x
-            y = player[0].y
-            player[0].x -= 1
-            shift_body(x, y)
-        return True
-    return False  
+def move_left() -> None:
+    global current_movement
+    x = player[0].x
+    y = player[0].y
+    player[0].x -= 1
+    shift_body(x, y)
 
-def extend_body():
+def extend_body() -> None:
     global current_movement
     tail = player[len(player) - 1]
     if len(player) == 1:
@@ -122,38 +110,43 @@ def render() -> None:
 
 def clear_screen() -> bool:
     print(f'\033[{WIDTH+2}D', end='')
-    print(f'\033[{HEIGHT+2}A', end='')
+    print(f'\033[{HEIGHT+3}A', end='')
 
 current_movement = None
 
 gameover: bool = False
+score: int = 0
 
 put_food()
 
 while not gameover:
-    if food == player[0]:
+    head = player[0]
+    if food == head:
         put_food()
         extend_body()
-    render()
+        score += 1
+    if any([head.x == 0, head.x == WIDTH+1, head.y == 0, head.y == HEIGHT+1,
+            head in player[1:]]):
+        gameover = True
+        print('GAME OVER!')
+        exit(0)
     clear_screen()
+    render()
+    print('Score:', score)
     if current_movement:
         current_movement()
-    sleep(0.2)
+    sleep(0.1)
     if msvcrt.kbhit():
         typed_character = msvcrt.getch()
         if typed_character == b'w':
-            if current_movement != move_up and \
-                current_movement != move_down and move_up(False):
+            if move_up != current_movement != move_down:
                 current_movement = move_up
         if typed_character == b'a':
-            if current_movement != move_left and \
-                current_movement != move_right and move_left(False):
+            if move_left != current_movement != move_right:
                 current_movement = move_left
         if typed_character == b's':
-            if current_movement != move_down and \
-                current_movement != move_up and move_down(False):
+            if move_down != current_movement != move_up :
                 current_movement = move_down
         if typed_character == b'd':
-            if current_movement != move_right and \
-                current_movement != move_left and move_right(False):
+            if move_right != current_movement != move_left:
                 current_movement = move_right
