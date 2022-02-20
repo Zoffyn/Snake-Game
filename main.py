@@ -35,39 +35,43 @@ def shift_body(x:int, y: int):
         x = px
         y = py
 
-def move_up() -> bool:
+def move_up(move: bool = True) -> bool:
     if player[0].y > 1 and player[0].y - 1 != player[1].y:
-        x = player[0].x
-        y = player[0].y
-        player[0].y -= 1
-        shift_body(x, y)
+        if move:
+            x = player[0].x
+            y = player[0].y
+            player[0].y -= 1
+            shift_body(x, y)
         return True
     return False
 
-def move_down() -> bool:
+def move_down(move: bool = True) -> bool:
     if player[0].y < HEIGHT and player[0].y + 1 != player[1].y:
-        x = player[0].x
-        y = player[0].y
-        player[0].y += 1
-        shift_body(x, y)
+        if move:
+            x = player[0].x
+            y = player[0].y
+            player[0].y += 1
+            shift_body(x, y)
         return True
     return False
 
-def move_right() -> bool:
+def move_right(move: bool = True) -> bool:
     if player[0].x < WIDTH and player[0].x + 1 != player[1].x:
-        x = player[0].x
-        y = player[0].y
-        player[0].x += 1
-        shift_body(x, y)
+        if move:
+            x = player[0].x
+            y = player[0].y
+            player[0].x += 1
+            shift_body(x, y)
         return True
     return False
 
-def move_left() -> bool:
+def move_left(move: bool = True) -> bool:
     if player[0].x > 1 and player[0].x - 1 != player[1].x:
-        x = player[0].x
-        y = player[0].y
-        player[0].x -= 1
-        shift_body(x, y)
+        if move:
+            x = player[0].x
+            y = player[0].y
+            player[0].x -= 1
+            shift_body(x, y)
         return True
     return False  
 
@@ -88,7 +92,7 @@ def render() -> None:
 
 def clear_screen() -> bool:
     print(f'\033[{WIDTH+2}D', end='')
-    print(f'\033[{HEIGHT+2}A', end='')
+    print(f'\033[{HEIGHT+3}A', end='')
 
 current_movement = None
 
@@ -103,14 +107,14 @@ while not gameover:
     if msvcrt.kbhit():
         typed_character = msvcrt.getch()
         if typed_character == b'w':
-            if move_up():
+            if current_movement != move_up and move_up(False):
                 current_movement = move_up
         if typed_character == b'a':
-            if move_left():
+            if current_movement != move_left and move_left(False):
                 current_movement = move_left
         if typed_character == b's':
-            if move_down():
+            if current_movement != move_down and move_down(False):
                 current_movement = move_down
         if typed_character == b'd':
-            if move_right():
+            if current_movement != move_right and move_right(False):
                 current_movement = move_right
